@@ -1,18 +1,20 @@
-FROM node:22-alpine AS build
+# Use Node lightweight image
+FROM node:22-alpine
 
+# Set working directory
 WORKDIR /app
 
+# Copy package files
 COPY package*.json ./
-RUN npm ci
 
+# Install dependencies
+RUN npm install
+
+# Copy rest of project
 COPY . .
-RUN npm run build
 
-FROM nginx:stable-alpine
+# Expose Vite default port
+EXPOSE 5173
 
-COPY --from=build /app/dist /usr/share/nginx/html
-
-EXPOSE 80
-
-CMD ["nginx", "-g", "daemon off;"]
-
+# Run Vite dev server
+CMD ["npm", "run", "dev", "--", "--host"]
